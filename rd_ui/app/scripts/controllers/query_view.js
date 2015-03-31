@@ -47,7 +47,7 @@
     $scope.isQueryOwner = (currentUser.id === $scope.query.user.id) || currentUser.hasPermission('admin');
     $scope.canViewSource = currentUser.hasPermission('view_source');
 
-    $scope.dataSources = DataSource.get(function(dataSources) {
+    $scope.dataSources = DataSource.query(function(dataSources) {
       updateSchema();
       $scope.query.data_source_id = $scope.query.data_source_id || dataSources[0].id;
     });
@@ -108,21 +108,21 @@
       $scope.queryResult.cancelExecution();
       Events.record(currentUser, 'cancel_execute', 'query', $scope.query.id);
     };
-    
+
     $scope.archiveQuery = function(options, data) {
       if (data) {
         data.id = $scope.query.id;
       } else {
         data = $scope.query;
       }
-      
+
       $scope.isDirty = false;
-      
+
       options = _.extend({}, {
         successMessage: 'Query archived',
         errorMessage: 'Query could not be archived'
       }, options);
-      
+
       return Query.delete({id: data.id}, function() {
         $scope.query.is_archived = true;
         $scope.query.schedule = null;
